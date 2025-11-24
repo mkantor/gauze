@@ -52,7 +52,7 @@ suite('jsx', _ => {
         '\x1B[31m',
         '\x1B[31m',
         'really red',
-        '\x1B[39m\x1B[31m',
+        '\x1B[39m\x1B[31m\x1B[31m',
         '\x1B[39m\x1B[31m',
         '\x1B[39m',
       ],
@@ -81,6 +81,22 @@ suite('jsx', _ => {
           normal
           <bold>bold</bold>
           normal
+          <whiteBackground>
+            <black>
+              (black with white background)
+              <red>(red with white background)</red>
+              (black with white background)
+            </black>
+            <blue>
+              <green>
+                <redBackground>(green with red background)</redBackground>
+                (green with white background)
+              </green>
+              <yellowBackground>(blue with yellow background)</yellowBackground>
+              (blue with white background)
+            </blue>
+            (default with white background)
+          </whiteBackground>
         </>,
       ),
       [
@@ -93,17 +109,17 @@ suite('jsx', _ => {
         'bold',
         '\x1B[31m',
         'redbold',
-        '\x1B[39m\x1B[22m\x1B[1m',
+        '\x1B[39m\x1B[22m\x1B[1m\x1B[22m\x1B[2m\x1B[22m\x1B[1m',
         'bold',
-        '\x1B[22m\x1B[22m\x1B[2m',
+        '\x1B[22m\x1B[22m\x1B[1m\x1B[22m\x1B[2m',
         'dim',
         '\x1B[31m',
         'reddim',
-        '\x1B[39m\x1B[22m\x1B[2m',
+        '\x1B[39m\x1B[22m\x1B[1m\x1B[22m\x1B[2m',
         'dim',
         '\x1B[22m\x1B[1m',
         'bold',
-        '\x1B[22m\x1B[22m\x1B[2m',
+        '\x1B[22m\x1B[22m\x1B[1m\x1B[22m\x1B[2m',
         'dim',
         '\x1B[22m\x1B[22m\x1B[1m',
         'bold',
@@ -121,6 +137,28 @@ suite('jsx', _ => {
         'bold',
         '\x1B[22m',
         'normal',
+        '\x1B[47m',
+        '\x1B[30m',
+        '(black with white background)',
+        '\x1B[31m',
+        '(red with white background)',
+        '\x1B[39m\x1B[47m\x1B[30m',
+        '(black with white background)',
+        '\x1B[39m\x1B[47m',
+        '\x1B[34m',
+        '\x1B[32m',
+        '\x1B[41m',
+        '(green with red background)',
+        '\x1B[49m\x1B[47m\x1B[34m\x1B[32m',
+        '(green with white background)',
+        '\x1B[39m\x1B[47m\x1B[34m',
+        '\x1B[43m',
+        '(blue with yellow background)',
+        '\x1B[49m\x1B[47m\x1B[34m',
+        '(blue with white background)',
+        '\x1B[39m\x1B[47m',
+        '(default with white background)',
+        '\x1B[49m',
       ],
     ))
 

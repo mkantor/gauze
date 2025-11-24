@@ -46,7 +46,6 @@ const tokenToOutput = (chunk: Token, tagStack: readonly TagName[]): string => {
     case 'openingTag':
       return elementSpecifications[chunk.tagName].start
     case 'closingTag':
-      const parentTagName = tagStack[tagStack.length - 2]
       const currentTagName = tagStack[tagStack.length - 1]
       if (currentTagName === undefined) {
         throw new Error(
@@ -54,8 +53,8 @@ const tokenToOutput = (chunk: Token, tagStack: readonly TagName[]): string => {
         )
       }
       let output = elementSpecifications[currentTagName].end
-      if (parentTagName !== undefined) {
-        output += elementSpecifications[parentTagName].start
+      for (const ancestorTagName of tagStack.slice(0, -1)) {
+        output += elementSpecifications[ancestorTagName].start
       }
       return output
   }
