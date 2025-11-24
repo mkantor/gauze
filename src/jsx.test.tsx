@@ -58,6 +58,21 @@ suite('jsx', _ => {
       ],
     ))
 
+  test('convert to strings', async _ => {
+    const html = await arrayFromAsync((<bold>a</bold>).asStrings())
+    assert.deepEqual(html, ['\x1B[22m\x1B[1m', 'a', '\x1B[22m'])
+  })
+
+  test('convert to bytes', async _ => {
+    const html = await arrayFromAsync((<bold>a</bold>).asBytes())
+    const encoder = new TextEncoder()
+    assert.deepEqual(html, [
+      encoder.encode('\x1B[22m\x1B[1m'),
+      encoder.encode('a'),
+      encoder.encode('\x1B[22m'),
+    ])
+  })
+
   test('elaborate nesting', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks(
@@ -97,6 +112,21 @@ suite('jsx', _ => {
             </blue>
             (default with white background)
           </whiteBackground>
+          <blink>
+            (this{' '}
+            <negative>
+              <cyan>is</cyan>
+            </negative>{' '}
+            <italic>
+              some{' '}
+              <underline>
+                <bold>
+                  <conceal>secret </conceal>text
+                </bold>
+              </underline>
+            </italic>
+            )
+          </blink>
         </>,
       ),
       [
@@ -159,23 +189,31 @@ suite('jsx', _ => {
         '\x1B[39m\x1B[47m',
         '(default with white background)',
         '\x1B[49m',
+        '\x1B[5m',
+        '(this',
+        ' ',
+        '\x1B[7m',
+        '\x1B[36m',
+        'is',
+        '\x1B[39m\x1B[5m\x1B[7m',
+        '\x1B[27m\x1B[5m',
+        ' ',
+        '\x1B[3m',
+        'some',
+        ' ',
+        '\x1B[4m',
+        '\x1B[22m\x1B[1m',
+        '\x1B[8m',
+        'secret ',
+        '\x1B[28m\x1B[5m\x1B[3m\x1B[4m\x1B[22m\x1B[1m',
+        'text',
+        '\x1B[22m\x1B[5m\x1B[3m\x1B[4m',
+        '\x1B[24m\x1B[5m\x1B[3m',
+        '\x1B[23m\x1B[5m',
+        ')',
+        '\x1B[25m',
       ],
     ))
-
-  test('convert to strings', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).asStrings())
-    assert.deepEqual(html, ['\x1B[22m\x1B[1m', 'a', '\x1B[22m'])
-  })
-
-  test('convert to bytes', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).asBytes())
-    const encoder = new TextEncoder()
-    assert.deepEqual(html, [
-      encoder.encode('\x1B[22m\x1B[1m'),
-      encoder.encode('a'),
-      encoder.encode('\x1B[22m'),
-    ])
-  })
 })
 
 // Type-level tests:

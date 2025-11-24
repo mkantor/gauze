@@ -3,8 +3,14 @@ export type VoidElementTagName = (typeof voidTagNames)[number]
 
 export const elementSpecifications = {
   eraseLine: { start: '\x1B[2K', end: '' },
+
   bold: { start: '\x1B[22m\x1B[1m', end: '\x1B[22m' },
   dim: { start: '\x1B[22m\x1B[2m', end: '\x1B[22m' },
+  italic: { start: '\x1B[3m', end: '\x1B[23m' },
+  underline: { start: '\x1B[4m', end: '\x1B[24m' },
+  blink: { start: '\x1B[5m', end: '\x1B[25m' },
+  negative: { start: '\x1B[7m', end: '\x1B[27m' },
+  conceal: { start: '\x1B[8m', end: '\x1B[28m' },
 
   black: { start: '\x1B[30m', end: '\x1B[39m' },
   red: { start: '\x1B[31m', end: '\x1B[39m' },
