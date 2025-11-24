@@ -2,6 +2,11 @@ export type TagName = keyof typeof elementSpecifications
 export type VoidElementTagName = (typeof voidTagNames)[number]
 
 export const elementSpecifications = {
+  eraseToEndOfScreen: { start: '\x1B[0J', end: '' },
+  eraseFromStartOfScreen: { start: '\x1B[1J', end: '' },
+  eraseScreen: { start: '\x1B[2J', end: '' },
+  eraseToEndOfLine: { start: '\x1B[0K', end: '' },
+  eraseFromStartOfLine: { start: '\x1B[1K', end: '' },
   eraseLine: { start: '\x1B[2K', end: '' },
 
   bold: { start: '\x1B[22m\x1B[1m', end: '\x1B[22m' },
@@ -31,7 +36,14 @@ export const elementSpecifications = {
   whiteBackground: { start: '\x1B[47m', end: '\x1B[49m' },
 }
 
-const voidTagNames = ['eraseLine'] as const
+const voidTagNames = [
+  'eraseFromStartOfLine',
+  'eraseFromStartOfScreen',
+  'eraseLine',
+  'eraseScreen',
+  'eraseToEndOfLine',
+  'eraseToEndOfScreen',
+] as const
 
 const voidTagNamesAsSet = new Set<TagName>(voidTagNames)
 export const isVoidElementTagName = (
