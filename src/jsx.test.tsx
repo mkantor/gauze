@@ -128,7 +128,7 @@ suite('jsx', _ => {
             )
           </blink>
           <eraseScreen />
-          <moveAbsolute row={0n} column={0n} />
+          <move absolute x={0n} y={0n} />
           the end
         </>,
       ),

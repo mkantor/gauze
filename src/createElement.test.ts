@@ -48,7 +48,7 @@ suite('createElement', _ => {
   test('attributes', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks(
-        createElement('moveAbsolute', { row: 42n, column: 69n }),
+        createElement('move', { absolute: true, x: 42n, y: 69n }),
       ),
       ['\x1B[42;69H'],
     ))

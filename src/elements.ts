@@ -8,29 +8,37 @@ export type VoidElementTagName = keyof {
 }
 
 export const elementSpecifications = {
-  moveAbsolute: {
-    start: (attributes: { readonly row: bigint; readonly column: bigint }) =>
-      `\x1B[${attributes.row};${attributes.column}H`,
-    end: '',
-  },
-  moveRelative: {
-    start: (attributes: {
-      readonly horizontal: bigint
-      readonly vertical: bigint
-    }) =>
-      `${
-        attributes.horizontal < 0
-          ? `\x1B[${attributes.horizontal}D`
-          : attributes.horizontal > 0
-          ? `\x1B[${attributes.horizontal}C`
-          : ''
-      }${
-        attributes.vertical < 0
-          ? `\x1B[${attributes.vertical}A`
-          : attributes.vertical > 0
-          ? `\x1B[${attributes.vertical}B`
-          : ''
-      }`,
+  move: {
+    start: (
+      attributes:
+        | {
+            readonly absolute: true
+            readonly relative?: false
+            readonly x: bigint
+            readonly y: bigint
+          }
+        | {
+            readonly relative: true
+            readonly absolute?: false
+            readonly x: bigint
+            readonly y: bigint
+          },
+    ) =>
+      attributes.absolute === true
+        ? `\x1B[${attributes.x};${attributes.y}H`
+        : `${
+            attributes.x < 0
+              ? `\x1B[${attributes.x}D`
+              : attributes.x > 0
+              ? `\x1B[${attributes.x}C`
+              : ''
+          }${
+            attributes.y < 0
+              ? `\x1B[${attributes.y}A`
+              : attributes.y > 0
+              ? `\x1B[${attributes.y}B`
+              : ''
+          }`,
     end: '',
   },
 
@@ -73,10 +81,7 @@ export const resolveStartSequence = ({
   attributes,
 }: TagNameWithAttributes): string => {
   switch (tagName) {
-    // These silly repetitive cases prove that everything is in alignment.
-    case 'moveAbsolute':
-      return elementSpecifications[tagName].start(attributes)
-    case 'moveRelative':
+    case 'move':
       return elementSpecifications[tagName].start(attributes)
     default:
       return elementSpecifications[tagName].start
