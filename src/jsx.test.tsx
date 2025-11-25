@@ -127,6 +127,9 @@ suite('jsx', _ => {
             </italic>
             )
           </blink>
+          <eraseScreen />
+          <moveAbsolute row={0n} column={0n} />
+          the end
         </>,
       ),
       [
@@ -212,6 +215,9 @@ suite('jsx', _ => {
         '\x1B[23m\x1B[5m',
         ')',
         '\x1B[25m',
+        '\x1B[2J',
+        '\x1B[0;0H',
+        'the end',
       ],
     ))
 })
@@ -232,6 +238,9 @@ try {
 
   // @ts-expect-error
   ;<non-existent-element />
+
+  // @ts-expect-error
+  ;<moveAbsolute row="not a number" column={0n} />
 
   // Unfortunately hyphenated attributes are special-cased by TypeScript (see
   // <https://github.com/microsoft/TypeScript/issues/32447>), so this is not a

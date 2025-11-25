@@ -11,7 +11,7 @@ suite('transform streams', _ => {
       await arrayFromAsync(
         readableStreamFromIterable<Token>([
           { kind: 'text', text: 'Hello, ' },
-          { kind: 'openingTag', tagName: 'bold' },
+          { kind: 'openingTag', tagName: 'bold', attributes: {} },
           { kind: 'text', text: 'world' },
           { kind: 'closingTag' },
           { kind: 'text', text: '!' },

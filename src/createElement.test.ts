@@ -44,4 +44,12 @@ suite('createElement', _ => {
       ),
       ['\x1B[22m\x1B[1m', '␛gottem', '\x1B[22m'],
     ))
+
+  test('attributes', async _ =>
+    assert.deepEqual(
+      await asArrayOfOutputChunks(
+        createElement('moveAbsolute', { row: 42n, column: 69n }),
+      ),
+      ['\x1B[42;69H'],
+    ))
 })

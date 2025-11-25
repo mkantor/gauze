@@ -2,7 +2,7 @@ import type {
   Children as CreateElementChildren,
   CreateElementParameters,
 } from './createElement.js'
-import type { TagName } from './elements.js'
+import type { AttributesByTagName, TagName } from './elements.js'
 import type { ReadableTokenStream } from './readableTokenStream.js'
 
 import { createElement as internalCreateElement } from './createElement.js'
@@ -28,14 +28,11 @@ export namespace createElement {
   }) => void
 
   export declare namespace JSX {
-    // This type alias exists to improve type info for JSX tags.
-    type ANSI<SpecificTagName extends TagName> = {
-      // This results in void elements having `never` for `_children`.
-      readonly [_children]?: CreateElementChildren<SpecificTagName>[number]
-    }
-
     type IntrinsicElements = {
-      readonly [SpecificTagName in TagName]: ANSI<SpecificTagName>
+      readonly [SpecificTagName in TagName]: AttributesByTagName[SpecificTagName] & {
+        // This results in void elements having `never` for `_children`.
+        readonly [_children]?: CreateElementChildren<SpecificTagName>[number]
+      }
     }
 
     type ElementChildrenAttribute = {

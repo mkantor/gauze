@@ -1,4 +1,8 @@
-import type { TagName, VoidElementTagName } from './elements.js'
+import type {
+  AttributesByTagName,
+  TagName,
+  VoidElementTagName,
+} from './elements.js'
 import {
   concatReadableStreams,
   readableStreamFromChunk,
@@ -6,7 +10,7 @@ import {
   readableStreamFromPromise,
 } from './readableStream.js'
 import { ReadableTokenStream } from './readableTokenStream.js'
-import type { Token } from './token.js'
+import type { LooseToken, Token } from './token.js'
 import { TextCapturingTransformStream } from './transformStreams.js'
 
 /** The type of the `...children` rest parameter of `createElement`. */
@@ -37,10 +41,14 @@ export const createElement = (
   } else {
     // This is an element.
     return ReadableTokenStream.fromConcatenatedReadableStreams([
-      readableStreamFromChunk<Token>({
-        kind: 'openingTag',
-        tagName: tagNameOrFragmentFunction,
-      }),
+      readableStreamFromChunk<Token>(
+        // TODO: Use runtime validation to prove tag/attribute correspondence.
+        {
+          kind: 'openingTag',
+          tagName: tagNameOrFragmentFunction,
+          attributes: attributes ?? {},
+        } satisfies LooseToken as Token,
+      ),
       ...childrenAsStreams,
       readableStreamFromChunk<Token>({
         kind: 'closingTag',
@@ -53,7 +61,7 @@ export type CreateElementParameters =
   | {
       readonly [SpecificTagName in TagName]: readonly [
         tagName: SpecificTagName,
-        attributes: null,
+        attributes: AttributesByTagName[SpecificTagName] | null,
         ...children: Children<SpecificTagName>,
       ]
     }[TagName]
