@@ -1,5 +1,11 @@
 export type TagName = keyof typeof elementSpecifications
-export type VoidElementTagName = (typeof voidTagNames)[number]
+
+export type VoidElementTagName = keyof {
+  // An element is void if its end sequence is an empty string.
+  [TagName in keyof ElementSpecifications as ElementSpecifications[TagName]['end'] extends ''
+    ? TagName
+    : never]: unknown
+}
 
 export const elementSpecifications = {
   moveAbsolute: {
@@ -84,22 +90,6 @@ export type AttributesByTagName = {
     ? Attributes
     : {}
 }
-
-const voidTagNames = [
-  'eraseFromStartOfLine',
-  'eraseFromStartOfScreen',
-  'eraseLine',
-  'eraseScreen',
-  'eraseToEndOfLine',
-  'eraseToEndOfScreen',
-  'moveAbsolute',
-  'moveRelative',
-] as const
-
-const voidTagNamesAsSet = new Set<TagName>(voidTagNames)
-export const isVoidElementTagName = (
-  tagName: TagName,
-): tagName is VoidElementTagName => voidTagNamesAsSet.has(tagName)
 
 type ElementSpecifications = typeof elementSpecifications
 
