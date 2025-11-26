@@ -59,12 +59,12 @@ suite('jsx', _ => {
     ))
 
   test('convert to strings', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).asStrings())
+    const html = await arrayFromAsync((<bold>a</bold>).strings)
     assert.deepEqual(html, ['\x1B[22m\x1B[1m', 'a', '\x1B[22m'])
   })
 
   test('convert to bytes', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).asBytes())
+    const html = await arrayFromAsync((<bold>a</bold>).bytes)
     const encoder = new TextEncoder()
     assert.deepEqual(html, [
       encoder.encode('\x1B[22m\x1B[1m'),

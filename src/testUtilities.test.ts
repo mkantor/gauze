@@ -12,7 +12,7 @@ export const arrayFromAsync = async <T>(
 }
 
 export const asArrayOfOutputChunks = async (source: ReadableTokenStream) =>
-  arrayFromAsync(source.asStrings())
+  arrayFromAsync(source.strings)
 
 export const createMockElement = (tagName: string): MockElement => ({
   tagName,

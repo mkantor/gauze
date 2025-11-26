@@ -37,11 +37,11 @@ export class ReadableTokenStream extends ReadableStream<Token> {
     })
   }
 
-  asStrings(): ReadableStream<string> {
+  get strings(): ReadableStream<string> {
     return this.pipeThrough(new OutputTransformStream())
   }
 
-  asBytes(): ReadableStream<Uint8Array<ArrayBufferLike>> {
-    return this.asStrings().pipeThrough(new TextEncoderStream())
+  get bytes(): ReadableStream<Uint8Array<ArrayBufferLike>> {
+    return this.strings.pipeThrough(new TextEncoderStream())
   }
 }
