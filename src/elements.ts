@@ -130,19 +130,12 @@ export const resolveStartSequence = ({
     case 'erase':
       return elementSpecifications[tagName].start(attributes)
     case 'black':
-      return elementSpecifications[tagName].start(attributes)
     case 'red':
-      return elementSpecifications[tagName].start(attributes)
     case 'green':
-      return elementSpecifications[tagName].start(attributes)
     case 'yellow':
-      return elementSpecifications[tagName].start(attributes)
     case 'blue':
-      return elementSpecifications[tagName].start(attributes)
     case 'magenta':
-      return elementSpecifications[tagName].start(attributes)
     case 'cyan':
-      return elementSpecifications[tagName].start(attributes)
     case 'white':
       return elementSpecifications[tagName].start(attributes)
     default:
@@ -157,19 +150,12 @@ export const resolveEndSequence = ({
   switch (tagName) {
     // These silly repetitive cases prove that everything is in alignment.
     case 'black':
-      return elementSpecifications[tagName].end(attributes)
     case 'red':
-      return elementSpecifications[tagName].end(attributes)
     case 'green':
-      return elementSpecifications[tagName].end(attributes)
     case 'yellow':
-      return elementSpecifications[tagName].end(attributes)
     case 'blue':
-      return elementSpecifications[tagName].end(attributes)
     case 'magenta':
-      return elementSpecifications[tagName].end(attributes)
     case 'cyan':
-      return elementSpecifications[tagName].end(attributes)
     case 'white':
       return elementSpecifications[tagName].end(attributes)
     default:
