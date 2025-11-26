@@ -9,7 +9,6 @@ suite('ReadableTokenStream', _ => {
     const chunks = await arrayFromAsync(
       ReadableTokenStream.fromConcatenatedReadableStreams([]).strings,
     )
-
     assert.deepEqual(chunks, [])
   })
 
@@ -22,7 +21,6 @@ suite('ReadableTokenStream', _ => {
         }),
       ]).strings,
     )
-
     assert.deepEqual(chunks, ['Hello, world!'])
   })
 
@@ -30,7 +28,6 @@ suite('ReadableTokenStream', _ => {
     const chunks = await arrayFromAsync(
       ReadableTokenStream.fromConcatenatedReadableStreams([]).bytes,
     )
-
     assert.deepEqual(chunks, [])
   })
 
@@ -43,7 +40,26 @@ suite('ReadableTokenStream', _ => {
         }),
       ]).bytes,
     )
+    const encoder = new TextEncoder()
+    assert.deepEqual(chunks, [encoder.encode('Hello, world!')])
+  })
 
+  test('empty stream as readable', async _ => {
+    const chunks = await arrayFromAsync(
+      ReadableTokenStream.fromConcatenatedReadableStreams([]).readable,
+    )
+    assert.deepEqual(chunks, [])
+  })
+
+  test('non-empty stream as readable', async _ => {
+    const chunks = await arrayFromAsync(
+      ReadableTokenStream.fromConcatenatedReadableStreams([
+        readableStreamFromChunk({
+          kind: 'text',
+          text: 'Hello, world!',
+        }),
+      ]).readable,
+    )
     const encoder = new TextEncoder()
     assert.deepEqual(chunks, [encoder.encode('Hello, world!')])
   })

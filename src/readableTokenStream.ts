@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream'
 import type { Token } from './token.js'
 import { OutputTransformStream } from './transformStreams.js'
 
@@ -43,5 +44,9 @@ export class ReadableTokenStream extends ReadableStream<Token> {
 
   get bytes(): ReadableStream<Uint8Array<ArrayBufferLike>> {
     return this.strings.pipeThrough(new TextEncoderStream())
+  }
+
+  get readable(): Readable {
+    return Readable.fromWeb(this.strings)
   }
 }
