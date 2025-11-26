@@ -42,12 +42,46 @@ export const elementSpecifications = {
     end: '',
   },
 
-  eraseToEndOfScreen: { start: '\x1B[0J', end: '' },
-  eraseFromStartOfScreen: { start: '\x1B[1J', end: '' },
-  eraseScreen: { start: '\x1B[2J', end: '' },
-  eraseToEndOfLine: { start: '\x1B[0K', end: '' },
-  eraseFromStartOfLine: { start: '\x1B[1K', end: '' },
-  eraseLine: { start: '\x1B[2K', end: '' },
+  erase: {
+    start: (
+      attributes:
+        | {
+            readonly screen: true
+            readonly line?: false
+            readonly to?: false
+          }
+        | {
+            readonly line: true
+            readonly screen?: false
+            readonly to?: false
+          }
+        | {
+            readonly to:
+              | 'screen-start'
+              | 'screen-end'
+              | 'line-start'
+              | 'line-end'
+            readonly screen?: false
+            readonly line?: false
+          },
+    ) => {
+      if (attributes.screen === true) {
+        return '\x1B[2J'
+      } else if (attributes.line === true) {
+        return '\x1B[2K'
+      } else if (attributes.to === 'screen-start') {
+        return '\x1B[1J'
+      } else if (attributes.to === 'screen-end') {
+        return '\x1B[0J'
+      } else if (attributes.to === 'line-start') {
+        return '\x1B[1K'
+      } else {
+        const _assertExhaustion: 'line-end' = attributes.to
+        return '\x1B[0K'
+      }
+    },
+    end: '',
+  },
 
   bold: { start: '\x1B[22m\x1B[1m', end: '\x1B[22m' },
   dim: { start: '\x1B[22m\x1B[2m', end: '\x1B[22m' },
@@ -74,14 +108,17 @@ export const elementSpecifications = {
   magentaBackground: { start: '\x1B[45m', end: '\x1B[49m' },
   cyanBackground: { start: '\x1B[46m', end: '\x1B[49m' },
   whiteBackground: { start: '\x1B[47m', end: '\x1B[49m' },
-}
+} as const
 
 export const resolveStartSequence = ({
   tagName,
   attributes,
 }: TagNameWithAttributes): string => {
   switch (tagName) {
+    // These silly repetitive cases prove that everything is in alignment.
     case 'move':
+      return elementSpecifications[tagName].start(attributes)
+    case 'erase':
       return elementSpecifications[tagName].start(attributes)
     default:
       return elementSpecifications[tagName].start

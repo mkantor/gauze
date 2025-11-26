@@ -25,7 +25,7 @@ suite('createElement', _ => {
 
   test('void elements', async _ =>
     assert.deepEqual(
-      await asArrayOfOutputChunks(createElement('eraseLine', null)),
+      await asArrayOfOutputChunks(createElement('erase', { line: true })),
       ['\x1B[2K'],
     ))
 

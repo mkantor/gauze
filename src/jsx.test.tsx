@@ -27,7 +27,7 @@ suite('jsx', _ => {
       await asArrayOfOutputChunks(
         <>
           a
-          <eraseLine />b
+          <erase line />b
         </>,
       ),
       ['a', '\x1B[2K', 'b'],
@@ -127,7 +127,7 @@ suite('jsx', _ => {
             </italic>
             )
           </blink>
-          <eraseScreen />
+          <erase screen />
           <move absolute x={0n} y={0n} />
           the end
         </>,
@@ -234,7 +234,7 @@ try {
   ;<ClassWhichShouldNotBeUsableAsAComponent />
 
   // @ts-expect-error
-  ;<eraseLine>illegal</eraseLine>
+  ;<erase line>illegal</erase>
 
   // @ts-expect-error
   ;<non-existent-element />
