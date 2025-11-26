@@ -7,6 +7,24 @@ export type VoidElementTagName = keyof {
     : never]: unknown
 }
 
+export type AttributesByTagName = {
+  [TagName in keyof ElementSpecifications]: ElementSpecifications[TagName]['start'] extends (
+    attributes: infer Attributes,
+  ) => unknown
+    ? Attributes
+    : {}
+}
+
+type ColorAttributes = {
+  readonly background?: boolean
+}
+const basicColor = (colorIndicator: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7) => ({
+  start: (attributes: ColorAttributes) =>
+    `\x1B[${attributes.background ? 4 : 3}${colorIndicator}m`,
+  end: (attributes: ColorAttributes) =>
+    `\x1B[${attributes.background ? 4 : 3}9m`,
+})
+
 export const elementSpecifications = {
   move: {
     start: (
@@ -91,23 +109,14 @@ export const elementSpecifications = {
   negative: { start: '\x1B[7m', end: '\x1B[27m' },
   conceal: { start: '\x1B[8m', end: '\x1B[28m' },
 
-  black: { start: '\x1B[30m', end: '\x1B[39m' },
-  red: { start: '\x1B[31m', end: '\x1B[39m' },
-  green: { start: '\x1B[32m', end: '\x1B[39m' },
-  yellow: { start: '\x1B[33m', end: '\x1B[39m' },
-  blue: { start: '\x1B[34m', end: '\x1B[39m' },
-  magenta: { start: '\x1B[35m', end: '\x1B[39m' },
-  cyan: { start: '\x1B[36m', end: '\x1B[39m' },
-  white: { start: '\x1B[37m', end: '\x1B[39m' },
-
-  blackBackground: { start: '\x1B[40m', end: '\x1B[49m' },
-  redBackground: { start: '\x1B[41m', end: '\x1B[49m' },
-  greenBackground: { start: '\x1B[42m', end: '\x1B[49m' },
-  yellowBackground: { start: '\x1B[43m', end: '\x1B[49m' },
-  blueBackground: { start: '\x1B[44m', end: '\x1B[49m' },
-  magentaBackground: { start: '\x1B[45m', end: '\x1B[49m' },
-  cyanBackground: { start: '\x1B[46m', end: '\x1B[49m' },
-  whiteBackground: { start: '\x1B[47m', end: '\x1B[49m' },
+  black: basicColor(0),
+  red: basicColor(1),
+  green: basicColor(2),
+  yellow: basicColor(3),
+  blue: basicColor(4),
+  magenta: basicColor(5),
+  cyan: basicColor(6),
+  white: basicColor(7),
 } as const
 
 export const resolveStartSequence = ({
@@ -120,17 +129,52 @@ export const resolveStartSequence = ({
       return elementSpecifications[tagName].start(attributes)
     case 'erase':
       return elementSpecifications[tagName].start(attributes)
+    case 'black':
+      return elementSpecifications[tagName].start(attributes)
+    case 'red':
+      return elementSpecifications[tagName].start(attributes)
+    case 'green':
+      return elementSpecifications[tagName].start(attributes)
+    case 'yellow':
+      return elementSpecifications[tagName].start(attributes)
+    case 'blue':
+      return elementSpecifications[tagName].start(attributes)
+    case 'magenta':
+      return elementSpecifications[tagName].start(attributes)
+    case 'cyan':
+      return elementSpecifications[tagName].start(attributes)
+    case 'white':
+      return elementSpecifications[tagName].start(attributes)
     default:
       return elementSpecifications[tagName].start
   }
 }
 
-export type AttributesByTagName = {
-  [TagName in keyof ElementSpecifications]: ElementSpecifications[TagName]['start'] extends (
-    attributes: infer Attributes,
-  ) => unknown
-    ? Attributes
-    : {}
+export const resolveEndSequence = ({
+  tagName,
+  attributes,
+}: TagNameWithAttributes): string => {
+  switch (tagName) {
+    // These silly repetitive cases prove that everything is in alignment.
+    case 'black':
+      return elementSpecifications[tagName].end(attributes)
+    case 'red':
+      return elementSpecifications[tagName].end(attributes)
+    case 'green':
+      return elementSpecifications[tagName].end(attributes)
+    case 'yellow':
+      return elementSpecifications[tagName].end(attributes)
+    case 'blue':
+      return elementSpecifications[tagName].end(attributes)
+    case 'magenta':
+      return elementSpecifications[tagName].end(attributes)
+    case 'cyan':
+      return elementSpecifications[tagName].end(attributes)
+    case 'white':
+      return elementSpecifications[tagName].end(attributes)
+    default:
+      return elementSpecifications[tagName].end
+  }
 }
 
 type ElementSpecifications = typeof elementSpecifications

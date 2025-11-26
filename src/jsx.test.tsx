@@ -96,7 +96,7 @@ suite('jsx', _ => {
           normal
           <bold>bold</bold>
           normal
-          <whiteBackground>
+          <white background>
             <black>
               (black with white background)
               <red>(red with white background)</red>
@@ -104,14 +104,14 @@ suite('jsx', _ => {
             </black>
             <blue>
               <green>
-                <redBackground>(green with red background)</redBackground>
+                <red background>(green with red background)</red>
                 (green with white background)
               </green>
-              <yellowBackground>(blue with yellow background)</yellowBackground>
+              <yellow background>(blue with yellow background)</yellow>
               (blue with white background)
             </blue>
             (default with white background)
-          </whiteBackground>
+          </white>
           <blink>
             (this{' '}
             <negative>

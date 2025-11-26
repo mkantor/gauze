@@ -1,4 +1,4 @@
-import { elementSpecifications, resolveStartSequence } from './elements.js'
+import { resolveEndSequence, resolveStartSequence } from './elements.js'
 import type { Token } from './token.js'
 
 export class TextCapturingTransformStream extends TransformStream<
@@ -46,13 +46,13 @@ const tokenToOutput = (token: Token, tagStack: OpeningTagStack): string => {
     case 'openingTag':
       return resolveStartSequence(token)
     case 'closingTag':
-      const currentOpeningTag = tagStack[tagStack.length - 1]
-      if (currentOpeningTag === undefined) {
+      const lastOpeningTag = tagStack[tagStack.length - 1]
+      if (lastOpeningTag === undefined) {
         throw new Error(
           'Received a `closingTag` token without a current tag name. This is a bug!',
         )
       }
-      let output = elementSpecifications[currentOpeningTag.tagName].end
+      let output = resolveEndSequence(lastOpeningTag)
       for (const ancestorOpeningTag of tagStack.slice(0, -1)) {
         output += resolveStartSequence(ancestorOpeningTag)
       }
