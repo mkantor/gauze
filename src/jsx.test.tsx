@@ -128,7 +128,8 @@ suite('jsx', _ => {
             )
           </blink>
           <erase screen />
-          <move absolute x={0n} y={0n} />
+          {/* bigints or numeric strings are accepted */}
+          <move absolute x="0" y={0n} />
           the end
         </>,
       ),

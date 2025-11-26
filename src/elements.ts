@@ -32,31 +32,24 @@ export const elementSpecifications = {
         | {
             readonly absolute: true
             readonly relative?: false
-            readonly x: bigint
-            readonly y: bigint
+            readonly x: bigint | `${bigint}`
+            readonly y: bigint | `${bigint}`
           }
         | {
             readonly relative: true
             readonly absolute?: false
-            readonly x: bigint
-            readonly y: bigint
+            readonly x: bigint | `${bigint}`
+            readonly y: bigint | `${bigint}`
           },
-    ) =>
-      attributes.absolute === true
-        ? `\x1B[${attributes.x};${attributes.y}H`
-        : `${
-            attributes.x < 0
-              ? `\x1B[${attributes.x}D`
-              : attributes.x > 0
-              ? `\x1B[${attributes.x}C`
-              : ''
-          }${
-            attributes.y < 0
-              ? `\x1B[${attributes.y}A`
-              : attributes.y > 0
-              ? `\x1B[${attributes.y}B`
-              : ''
-          }`,
+    ) => {
+      const x = Number(attributes.x)
+      const y = Number(attributes.y)
+      return attributes.absolute === true
+        ? `\x1B[${x};${y}H`
+        : `${x < 0 ? `\x1B[${x}D` : x > 0 ? `\x1B[${x}C` : ''}${
+            y < 0 ? `\x1B[${y}A` : y > 0 ? `\x1B[${y}B` : ''
+          }`
+    },
     end: '',
   },
 
