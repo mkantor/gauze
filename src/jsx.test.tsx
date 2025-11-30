@@ -127,6 +127,12 @@ suite('jsx', _ => {
             </italic>
             )
           </blink>
+          <color red="90%" green={0.1} blue="11%">
+            reddish
+          </color>
+          <color red={0.4} green={0.4} blue="40%">
+            gray
+          </color>
           <erase screen />
           {/* bigints or numeric strings are accepted */}
           <move absolute x="0" y={0n} />
@@ -216,6 +222,12 @@ suite('jsx', _ => {
         '\x1B[23m\x1B[5m',
         ')',
         '\x1B[25m',
+        '\x1B[38;5;160m',
+        'reddish',
+        '\x1B[39m',
+        '\x1B[38;5;241m',
+        'gray',
+        '\x1B[39m',
         '\x1B[2J',
         '\x1B[0;0H',
         'the end',

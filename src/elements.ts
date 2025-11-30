@@ -1,3 +1,5 @@
+import { rgbToColorIndex } from './colors.js'
+
 export type TagName = keyof typeof elementSpecifications
 
 export type VoidElementTagName = keyof {
@@ -110,6 +112,28 @@ export const elementSpecifications = {
   magenta: basicColor(5),
   cyan: basicColor(6),
   white: basicColor(7),
+
+  // TODO: Detect whether the terminal supports 24-bit color, use it if so.
+  color: {
+    start: (
+      attributes: ColorAttributes & {
+        readonly red: number | Percentage
+        readonly green: number | Percentage
+        readonly blue: number | Percentage
+      },
+    ) => {
+      const red = colorComponentAsNumber(attributes.red)
+      const green = colorComponentAsNumber(attributes.green)
+      const blue = colorComponentAsNumber(attributes.blue)
+      return `\x1B[${attributes.background ? 4 : 3}8;5;${rgbToColorIndex(
+        red,
+        green,
+        blue,
+      )}m`
+    },
+    end: (attributes: ColorAttributes) =>
+      `\x1B[${attributes.background ? 4 : 3}9m`,
+  },
 } as const
 
 export const resolveStartSequence = ({
@@ -121,6 +145,8 @@ export const resolveStartSequence = ({
     case 'move':
       return elementSpecifications[tagName].start(attributes)
     case 'erase':
+      return elementSpecifications[tagName].start(attributes)
+    case 'color':
       return elementSpecifications[tagName].start(attributes)
     case 'black':
     case 'red':
@@ -150,6 +176,7 @@ export const resolveEndSequence = ({
     case 'magenta':
     case 'cyan':
     case 'white':
+    case 'color':
       return elementSpecifications[tagName].end(attributes)
     default:
       return elementSpecifications[tagName].end
@@ -164,3 +191,24 @@ type TagNameWithAttributes = {
     readonly attributes: AttributesByTagName[TagName]
   }
 }[keyof ElementSpecifications]
+
+type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+type NonzeroDigit = Exclude<Digit, '0'>
+type ZeroToNinetyNineInclusive = Digit | `${NonzeroDigit}${Digit}`
+
+// One decimal place is plenty even for 24-bit colors (there are only 256
+// unique values per color channel).
+type Percentage = `${
+  | ZeroToNinetyNineInclusive
+  | `${ZeroToNinetyNineInclusive}.${Digit}`
+  | '100'}%`
+
+const colorComponentAsNumber = (component: number | Percentage) =>
+  typeof component === 'string'
+    ? Number(component.slice(0, -1)) / 100
+    : // Clamp to [0, 1].
+    component < 0
+    ? 0
+    : component > 1
+    ? 1
+    : component
