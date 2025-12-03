@@ -1,7 +1,9 @@
 # gauze
 
-Gauze is an embedded DSL for generating text containing [ANSI escape
-sequences][ansi] using typed [JSX][jsx].
+Gauze is an embedded DSL for generating [`ReadableStream`s][readable-stream] of
+text containing [ANSI escape sequences][ansi] using typed [JSX][jsx].
+
+Child nodes can be async values or streams.
 
 Here's an example:
 
