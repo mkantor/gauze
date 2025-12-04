@@ -47,7 +47,7 @@ export const elementSpecifications = {
       const x = Number(attributes.x)
       const y = Number(attributes.y)
       return attributes.absolute === true
-        ? `\x1B[${x};${y}H`
+        ? `\x1B[${y};${x}H`
         : `${x < 0 ? `\x1B[${x}D` : x > 0 ? `\x1B[${x}C` : ''}${
             y < 0 ? `\x1B[${y}A` : y > 0 ? `\x1B[${y}B` : ''
           }`
