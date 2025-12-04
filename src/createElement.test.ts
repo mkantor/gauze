@@ -50,6 +50,6 @@ suite('createElement', _ => {
       await asArrayOfOutputChunks(
         createElement('move', { absolute: true, x: '42', y: '69' }),
       ),
-      ['\x1B[42;69H'],
+      ['\x1B[69;42H'],
     ))
 })
