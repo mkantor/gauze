@@ -31,7 +31,7 @@ import { createElement } from '@superhighway/gauze'
 In my terminal that looks like this:
 
 <!-- This screenshot is double-sized and shrank for HiDPI screens. -->
-<img src="./media/screenshot.png" alt="Screenshot" width="340">
+<img width="340" src="media/screenshot.png" alt="Screenshot" />
 
 ## Setup
 
