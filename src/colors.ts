@@ -89,7 +89,7 @@ const rgbToCubeColorIndex = (...[red, green, blue]: ColorTuple): ColorIndex => {
   return 16 + 36 * redIndex + 6 * greenIndex + blueIndex
 }
 
-function cubeColorIndexToRGB(index: ColorIndex): ColorTuple {
+const cubeColorIndexToRGB = (index: ColorIndex): ColorTuple => {
   const red = colorCubeLevels[Math.floor((index - 16) / 36)]
   const green = colorCubeLevels[Math.floor(((index - 16) % 36) / 6)]
   const blue = colorCubeLevels[(index - 16) % 6]
