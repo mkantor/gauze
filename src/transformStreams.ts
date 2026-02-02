@@ -1,3 +1,4 @@
+import type { TerminalCapabilities } from './capabilities.js'
 import { resolveEndSequence, resolveStartSequence } from './elements.js'
 import type { Token } from './token.js'
 
@@ -21,13 +22,17 @@ export class TextCapturingTransformStream extends TransformStream<
 
 export class OutputTransformStream extends TransformStream<Token, string> {
   #mutableTagStack: OpeningTagStack = []
-  constructor() {
+  constructor(capabilities: TerminalCapabilities) {
     super({
       transform: (chunk, controller) => {
         if (chunk.kind === 'openingTag') {
           this.#mutableTagStack.push(chunk)
         }
-        const htmlFragment = tokenToOutput(chunk, this.#mutableTagStack)
+        const htmlFragment = tokenToOutput(
+          chunk,
+          this.#mutableTagStack,
+          capabilities,
+        )
         if (chunk.kind === 'closingTag') {
           this.#mutableTagStack.pop()
         }
@@ -39,12 +44,16 @@ export class OutputTransformStream extends TransformStream<Token, string> {
   }
 }
 
-const tokenToOutput = (token: Token, tagStack: OpeningTagStack): string => {
+const tokenToOutput = (
+  token: Token,
+  tagStack: OpeningTagStack,
+  capabilities: TerminalCapabilities,
+): string => {
   switch (token.kind) {
     case 'text':
       return escapeText(token.text)
     case 'openingTag':
-      return resolveStartSequence(token)
+      return resolveStartSequence(token, capabilities)
     case 'closingTag':
       const lastOpeningTag = tagStack[tagStack.length - 1]
       if (lastOpeningTag === undefined) {
@@ -54,7 +63,7 @@ const tokenToOutput = (token: Token, tagStack: OpeningTagStack): string => {
       }
       let output = resolveEndSequence(lastOpeningTag)
       for (const ancestorOpeningTag of tagStack.slice(0, -1)) {
-        output += resolveStartSequence(ancestorOpeningTag)
+        output += resolveStartSequence(ancestorOpeningTag, capabilities)
       }
       return output
   }

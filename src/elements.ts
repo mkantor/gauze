@@ -1,3 +1,4 @@
+import type { TerminalCapabilities } from './capabilities.js'
 import { rgbToColorIndex } from './colors.js'
 
 export type TagName = keyof typeof elementSpecifications
@@ -122,6 +123,7 @@ const elementSpecifications = {
         readonly green: number | Percentage
         readonly blue: number | Percentage
       },
+      _capabilities: TerminalCapabilities,
     ) => {
       const red = colorComponentAsNumber(attributes.red)
       const green = colorComponentAsNumber(attributes.green)
@@ -137,10 +139,10 @@ const elementSpecifications = {
   },
 } as const
 
-export const resolveStartSequence = ({
-  tagName,
-  attributes,
-}: TagNameWithAttributes): string => {
+export const resolveStartSequence = (
+  { tagName, attributes }: TagNameWithAttributes,
+  capabilities: TerminalCapabilities,
+): string => {
   switch (tagName) {
     // These silly repetitive cases prove that everything is in alignment.
     case 'move':
@@ -148,7 +150,7 @@ export const resolveStartSequence = ({
     case 'erase':
       return elementSpecifications[tagName].start(attributes)
     case 'color':
-      return elementSpecifications[tagName].start(attributes)
+      return elementSpecifications[tagName].start(attributes, capabilities)
     case 'black':
     case 'red':
     case 'green':

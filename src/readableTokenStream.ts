@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream'
+import type { TerminalCapabilities } from './capabilities.js'
 import type { Token } from './token.js'
 import { OutputTransformStream } from './transformStreams.js'
 
@@ -39,7 +40,12 @@ export class ReadableTokenStream extends ReadableStream<Token> {
   }
 
   get strings(): ReadableStream<string> {
-    return this.pipeThrough(new OutputTransformStream())
+    const placeholderTerminalCapabilities: TerminalCapabilities = {
+      xtermTrueColor: false,
+    }
+    return this.pipeThrough(
+      new OutputTransformStream(placeholderTerminalCapabilities),
+    )
   }
 
   get bytes(): ReadableStream<Uint8Array<ArrayBufferLike>> {

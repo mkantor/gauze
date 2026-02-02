@@ -15,7 +15,7 @@ suite('transform streams', _ => {
           { kind: 'text', text: 'world' },
           { kind: 'closingTag' },
           { kind: 'text', text: '!' },
-        ]).pipeThrough(new OutputTransformStream()),
+        ]).pipeThrough(new OutputTransformStream({ xtermTrueColor: false })),
       ),
       ['Hello, ', '\x1B[22m\x1B[1m', 'world', '\x1B[22m', '!'],
     )
