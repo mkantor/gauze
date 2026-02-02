@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream'
+import stream from 'node:stream'
 import type { TerminalCapabilities } from './capabilities.js'
 import type { Token } from './token.js'
 import { OutputTransformStream } from './transformStreams.js'
@@ -39,20 +39,13 @@ export class ReadableTokenStream extends ReadableStream<Token> {
     })
   }
 
-  get strings(): ReadableStream<string> {
-    const placeholderTerminalCapabilities: TerminalCapabilities = {
-      xtermTrueColor: false,
+  pipeToTerminal(terminalWriteStream: stream.Writable): stream.Writable {
+    const capabilities: TerminalCapabilities = {
+      xtermTrueColor: false, // TODO Detect this.
     }
-    return this.pipeThrough(
-      new OutputTransformStream(placeholderTerminalCapabilities),
-    )
-  }
 
-  get bytes(): ReadableStream<Uint8Array<ArrayBufferLike>> {
-    return this.strings.pipeThrough(new TextEncoderStream())
-  }
-
-  get readable(): Readable {
-    return Readable.fromWeb(this.strings)
+    return stream.Readable.fromWeb(
+      this.pipeThrough(new OutputTransformStream(capabilities)),
+    ).pipe(terminalWriteStream)
   }
 }

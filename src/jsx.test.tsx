@@ -1,9 +1,13 @@
 import assert from 'node:assert'
 import test, { suite } from 'node:test'
 import { createElement } from './jsx.js'
-import { arrayFromAsync, asArrayOfOutputChunks } from './testUtilities.test.js'
+import { ReadableTokenStream } from './readableTokenStream.js'
+import { asArrayOfOutputChunks } from './testUtilities.test.js'
 
 suite('jsx', _ => {
+  test('output is ReadableTokenStream', _ =>
+    assert(<></> instanceof ReadableTokenStream))
+
   test('empty fragment', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks({ xtermTrueColor: true }, <></>),
@@ -91,21 +95,6 @@ suite('jsx', _ => {
         '\x1B[39m',
       ],
     ))
-
-  test('convert to strings', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).strings)
-    assert.deepEqual(html, ['\x1B[22m\x1B[1m', 'a', '\x1B[22m'])
-  })
-
-  test('convert to bytes', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).bytes)
-    const encoder = new TextEncoder()
-    assert.deepEqual(html, [
-      encoder.encode('\x1B[22m\x1B[1m'),
-      encoder.encode('a'),
-      encoder.encode('\x1B[22m'),
-    ])
-  })
 
   test('elaborate nesting', async _ =>
     assert.deepEqual(
