@@ -12,6 +12,7 @@ export type VoidElementTagName = keyof {
 export type AttributesByTagName = {
   [TagName in keyof ElementSpecifications]: ElementSpecifications[TagName]['start'] extends (
     attributes: infer Attributes,
+    ...rest: never
   ) => unknown
     ? Attributes
     : {}
@@ -27,7 +28,7 @@ const basicColor = (colorIndicator: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7) => ({
     `\x1B[${attributes.background ? 4 : 3}9m`,
 })
 
-export const elementSpecifications = {
+const elementSpecifications = {
   move: {
     start: (
       attributes:
