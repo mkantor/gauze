@@ -115,7 +115,6 @@ const elementSpecifications = {
   cyan: basicColor(6),
   white: basicColor(7),
 
-  // TODO: Detect whether the terminal supports 24-bit color, use it if so.
   color: {
     start: (
       attributes: ColorAttributes & {
@@ -123,16 +122,26 @@ const elementSpecifications = {
         readonly green: number | Percentage
         readonly blue: number | Percentage
       },
-      _capabilities: TerminalCapabilities,
+      capabilities: TerminalCapabilities,
     ) => {
       const red = colorComponentAsNumber(attributes.red)
       const green = colorComponentAsNumber(attributes.green)
       const blue = colorComponentAsNumber(attributes.blue)
-      return `\x1B[${attributes.background ? 4 : 3}8;5;${rgbToColorIndex(
-        red,
-        green,
-        blue,
-      )}m`
+
+      if (capabilities.xtermTrueColor) {
+        const redAsByte = Math.floor(red * 255)
+        const greenAsByte = Math.floor(green * 255)
+        const blueAsByte = Math.floor(blue * 255)
+        return `\x1B[${
+          attributes.background ? 4 : 3
+        }8;2;${redAsByte};${greenAsByte};${blueAsByte}m`
+      } else {
+        return `\x1B[${attributes.background ? 4 : 3}8;5;${rgbToColorIndex(
+          red,
+          green,
+          blue,
+        )}m`
+      }
     },
     end: (attributes: ColorAttributes) =>
       `\x1B[${attributes.background ? 4 : 3}9m`,
