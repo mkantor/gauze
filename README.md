@@ -25,7 +25,7 @@ import { createElement } from '@superhighway/gauze'
     </negative>
     {'\n'}
   </>
-).readable.pipe(process.stdout)
+).pipeToTerminal(process.stdout)
 ```
 
 In my terminal that looks like this:
@@ -65,11 +65,11 @@ configurable by users, so exact shades may vary.
 
 #### `<color>`
 
-Sets a more precise color using 8-bit color codes. Expects attributes `red`,
-`green`, and `blue` to specify each color channel (values may be either numbers
-between `0` and `1` or strings ending with a `%` sign, e.g. `red={0.5}` or
-`red="50%"`). Color specification assumes the standard [xterm color
-palette][xterm-colors].
+Sets a precise color using 8-bit or 24-bit color codes depending the target
+terminal. Expects attributes `red`, `green`, and `blue` to specify each color
+channel (values may be either numbers between `0` and `1` or strings ending with
+a `%` sign, e.g. `red={0.5}` or `red="50%"`). Color specification assumes the
+standard [xterm color palette][xterm-colors].
 
 Like the named colors, `<color>` accepts a boolean `background` attribute (e.g.
 `<color background red="40%" green="10%" blue="10%"><green>this is green with a
