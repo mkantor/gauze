@@ -1,4 +1,6 @@
+import type { TerminalCapabilities } from './capabilities.js'
 import type { ReadableTokenStream } from './readableTokenStream.js'
+import { OutputTransformStream } from './transformStreams.js'
 
 // TODO: Switch to `Array.fromAsync`.
 export const arrayFromAsync = async <T>(
@@ -11,8 +13,10 @@ export const arrayFromAsync = async <T>(
   return array
 }
 
-export const asArrayOfOutputChunks = async (source: ReadableTokenStream) =>
-  arrayFromAsync(source.strings)
+export const asArrayOfOutputChunks = async (
+  capabilities: TerminalCapabilities,
+  source: ReadableTokenStream,
+) => arrayFromAsync(source.pipeThrough(new OutputTransformStream(capabilities)))
 
 export const createMockElement = (tagName: string): MockElement => ({
   tagName,

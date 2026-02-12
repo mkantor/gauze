@@ -1,3 +1,4 @@
+import type { TerminalCapabilities } from './capabilities.js'
 import { rgbToColorIndex } from './colors.js'
 
 export type TagName = keyof typeof elementSpecifications
@@ -12,6 +13,7 @@ export type VoidElementTagName = keyof {
 export type AttributesByTagName = {
   [TagName in keyof ElementSpecifications]: ElementSpecifications[TagName]['start'] extends (
     attributes: infer Attributes,
+    ...rest: never
   ) => unknown
     ? Attributes
     : {}
@@ -27,7 +29,7 @@ const basicColor = (colorIndicator: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7) => ({
     `\x1B[${attributes.background ? 4 : 3}9m`,
 })
 
-export const elementSpecifications = {
+const elementSpecifications = {
   move: {
     start: (
       attributes:
@@ -113,7 +115,6 @@ export const elementSpecifications = {
   cyan: basicColor(6),
   white: basicColor(7),
 
-  // TODO: Detect whether the terminal supports 24-bit color, use it if so.
   color: {
     start: (
       attributes: ColorAttributes & {
@@ -121,25 +122,36 @@ export const elementSpecifications = {
         readonly green: number | Percentage
         readonly blue: number | Percentage
       },
+      capabilities: TerminalCapabilities,
     ) => {
       const red = colorComponentAsNumber(attributes.red)
       const green = colorComponentAsNumber(attributes.green)
       const blue = colorComponentAsNumber(attributes.blue)
-      return `\x1B[${attributes.background ? 4 : 3}8;5;${rgbToColorIndex(
-        red,
-        green,
-        blue,
-      )}m`
+
+      if (capabilities.xtermTrueColor) {
+        const redAsByte = Math.floor(red * 255)
+        const greenAsByte = Math.floor(green * 255)
+        const blueAsByte = Math.floor(blue * 255)
+        return `\x1B[${
+          attributes.background ? 4 : 3
+        }8;2;${redAsByte};${greenAsByte};${blueAsByte}m`
+      } else {
+        return `\x1B[${attributes.background ? 4 : 3}8;5;${rgbToColorIndex(
+          red,
+          green,
+          blue,
+        )}m`
+      }
     },
     end: (attributes: ColorAttributes) =>
       `\x1B[${attributes.background ? 4 : 3}9m`,
   },
 } as const
 
-export const resolveStartSequence = ({
-  tagName,
-  attributes,
-}: TagNameWithAttributes): string => {
+export const resolveStartSequence = (
+  { tagName, attributes }: TagNameWithAttributes,
+  capabilities: TerminalCapabilities,
+): string => {
   switch (tagName) {
     // These silly repetitive cases prove that everything is in alignment.
     case 'move':
@@ -147,7 +159,7 @@ export const resolveStartSequence = ({
     case 'erase':
       return elementSpecifications[tagName].start(attributes)
     case 'color':
-      return elementSpecifications[tagName].start(attributes)
+      return elementSpecifications[tagName].start(attributes, capabilities)
     case 'black':
     case 'red':
     case 'green':

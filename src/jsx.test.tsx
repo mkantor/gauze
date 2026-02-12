@@ -1,18 +1,29 @@
 import assert from 'node:assert'
 import test, { suite } from 'node:test'
 import { createElement } from './jsx.js'
-import { arrayFromAsync, asArrayOfOutputChunks } from './testUtilities.test.js'
+import { ReadableTokenStream } from './readableTokenStream.js'
+import { asArrayOfOutputChunks } from './testUtilities.test.js'
 
 suite('jsx', _ => {
+  test('output is ReadableTokenStream', _ =>
+    assert(<></> instanceof ReadableTokenStream))
+
   test('empty fragment', async _ =>
-    assert.deepEqual(await asArrayOfOutputChunks(<></>), []))
+    assert.deepEqual(
+      await asArrayOfOutputChunks({ xtermTrueColor: true }, <></>),
+      [],
+    ))
 
   test('fragment with text content', async _ =>
-    assert.deepEqual(await asArrayOfOutputChunks(<>blah</>), ['blah']))
+    assert.deepEqual(
+      await asArrayOfOutputChunks({ xtermTrueColor: true }, <>blah</>),
+      ['blah'],
+    ))
 
   test('nested fragments', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks(
+        { xtermTrueColor: true },
         <>
           <>
             <>a</>
@@ -25,6 +36,7 @@ suite('jsx', _ => {
   test('fragment with mixed content', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks(
+        { xtermTrueColor: true },
         <>
           a
           <erase line />b
@@ -34,13 +46,39 @@ suite('jsx', _ => {
     ))
 
   test('escaping', async _ =>
-    assert.deepEqual(await asArrayOfOutputChunks(<>{'\x1B[1mhax'}</>), [
-      '␛[1mhax',
-    ]))
+    assert.deepEqual(
+      await asArrayOfOutputChunks(
+        { xtermTrueColor: true },
+        <>{'\x1B[1mhax'}</>,
+      ),
+      ['␛[1mhax'],
+    ))
+
+  test('24-bit color support', async _ => {
+    assert.deepEqual(
+      await asArrayOfOutputChunks(
+        { xtermTrueColor: true },
+        <color red="1%" green="2%" blue="3%">
+          a
+        </color>,
+      ),
+      ['\x1B[38;2;2;5;7m', 'a', '\x1B[39m'],
+    )
+    assert.deepEqual(
+      await asArrayOfOutputChunks(
+        { xtermTrueColor: false },
+        <color red="1%" green="2%" blue="3%">
+          a
+        </color>,
+      ),
+      ['\x1B[38;5;232m', 'a', '\x1B[39m'],
+    )
+  })
 
   test('same-element nesting', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks(
+        { xtermTrueColor: true },
         <red>
           <red>
             <red>really red</red>
@@ -58,24 +96,10 @@ suite('jsx', _ => {
       ],
     ))
 
-  test('convert to strings', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).strings)
-    assert.deepEqual(html, ['\x1B[22m\x1B[1m', 'a', '\x1B[22m'])
-  })
-
-  test('convert to bytes', async _ => {
-    const html = await arrayFromAsync((<bold>a</bold>).bytes)
-    const encoder = new TextEncoder()
-    assert.deepEqual(html, [
-      encoder.encode('\x1B[22m\x1B[1m'),
-      encoder.encode('a'),
-      encoder.encode('\x1B[22m'),
-    ])
-  })
-
   test('elaborate nesting', async _ =>
     assert.deepEqual(
       await asArrayOfOutputChunks(
+        { xtermTrueColor: true },
         <>
           normal
           <bold>
@@ -222,10 +246,10 @@ suite('jsx', _ => {
         '\x1B[23m\x1B[5m',
         ')',
         '\x1B[25m',
-        '\x1B[38;5;160m',
+        '\x1B[38;2;229;25;28m',
         'reddish',
         '\x1B[39m',
-        '\x1B[38;5;241m',
+        '\x1B[38;2;102;102;102m',
         'gray',
         '\x1B[39m',
         '\x1B[2J',
